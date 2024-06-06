@@ -1,20 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { tdClient, setTdlibParameters, checkDatabaseEncryptionKey } from '../tdclient';
-import { Button, ButtonGroup } from '@chakra-ui/react'
+import { Input, Button, Spinner, Flex } from '@chakra-ui/react';
+import Home from './Home';
 
 const Login = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [code, setCode] = useState('');
-  const [stage, setStage] = useState('phone'); // 'phone' or 'code'
+  const [authorizationState, setAuthorizationState] = useState('');
 
   useEffect(() => {
+    const getAuthorizationState = async () => {
+      setAuthorizationState(await tdClient.send({
+        '@type': 'getAuthorizationState'
+      }));  
+    }; 
+
     const initializeTdLib = async () => {
       await setTdlibParameters();
-      await checkDatabaseEncryptionKey();
-    };
+    }
 
-    initializeTdLib();
-  }, []);
+    const sendDatabaseEncryptionKey = async () => {
+      await checkDatabaseEncryptionKey();
+    }
+
+    switch (authorizationState['@type']) {
+      case 'authorizationStateWaitTdlibParameters':
+          initializeTdLib();
+          break;
+      case 'authorizationStateWaitEncryptionKey':
+          sendDatabaseEncryptionKey();
+          break;
+      case 'authorizationStateWaitPhoneNumber': {
+          break;
+      }
+      case 'authorizationStateWaitCode':
+          break;
+    }        
+    
+    getAuthorizationState();
+    
+  }, [authorizationState]);
 
   const handleSendCode = async () => {
     try {
@@ -22,7 +47,6 @@ const Login = () => {
         '@type': 'setAuthenticationPhoneNumber',
         phone_number: phoneNumber
       });
-      setStage('code');
     } catch (error) {
       console.error('Error sending phone number:', error);
     }
@@ -40,31 +64,50 @@ const Login = () => {
     }
   };
 
+  const pageDisplay = (state) => {
+    switch(state){
+      case 'authorizationStateReady': {
+        return(<Home/>);
+      }
+      case 'authorizationStateWaitPhoneNumber': {
+        return(
+          <Flex align="center" p="4">
+            <Input type="text"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="Enter phone number"
+              p="2"
+              mr="4"/>
+            <Button onClick={handleSendCode} colorScheme='blue'>Send Code </Button>
+          </Flex>
+        );
+      }
+      case 'authorizationStateWaitCode': {
+        return (
+          <Flex align="center" p="4">
+            <Input type="text"
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="Enter verification code"
+              p="2"
+              mr="4"/>
+            <Button onClick={handleLogin} colorScheme='blue'>Login</Button>
+          </Flex>
+        );
+      }
+          
+      default:
+        return (
+          <Spinner color='blue.500' />
+        );
+    }
+  }
+
   return (
     <div>
-      {stage === 'phone' ? (
-        <div>
-          <input
-            type="text"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="Enter phone number"
-          />
-          <Button onClick={handleSendCode} colorScheme='blue'>Send Code </Button>
-        </div>
-      ) : (
-        <div>
-          <input
-            type="text"
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="Enter verification code"
-          />
-          <button onClick={handleLogin}>Login</button>
-        </div>
-      )}
+      {pageDisplay(authorizationState['@type'])}
     </div>
-  );
+    );    
 };
 
 export default Login;

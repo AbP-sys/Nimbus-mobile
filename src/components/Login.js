@@ -78,7 +78,7 @@ const Login = () => {
               placeholder="Enter phone number"
               p="2"
               mr="4"/>
-            <Button onClick={handleSendCode} colorScheme='blue'>Send Code </Button>
+            <Button onClick={handleSendCode} colorScheme='orange'>Send Code </Button>
           </Flex>
         );
       }
@@ -91,7 +91,7 @@ const Login = () => {
               placeholder="Enter verification code"
               p="2"
               mr="4"/>
-            <Button onClick={handleLogin} colorScheme='blue'>Login</Button>
+            <Button onClick={handleLogin} colorScheme='orange'>Login</Button>
           </Flex>
         );
       }

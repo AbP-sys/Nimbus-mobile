@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { tdClient} from '../tdclient';
+import { Tabs, TabList,TabPanels, TabPanel,Tab, TabIndicator, Flex, Text, Icon, Box } from '@chakra-ui/react';
+import { IoImageOutline ,IoCloudOutline, IoCloudUploadOutline, IoPersonOutline } from "react-icons/io5";
+import PhotosPage from './tabs/PhotosPage';
+import DrivePage from './tabs/DrivePage';
+import UploadPage from './tabs/UploadPage';
+import ProfilePage from './tabs/ProfilePage';
 
 const Home = () => {
     const [userName, setUserName] = useState('');
@@ -13,7 +19,56 @@ const Home = () => {
         getUser();
     }, []);
     return (
-        <h2>Logged in as {userName}</h2>
+        <div>
+            <Flex
+      position="fixed"
+      width="100%"
+      height="100%"
+      flexDirection="column"
+      alignItems="center"
+      bg="white"
+      p="4"
+    >
+      <Text as="h2" fontWeight="bold" mb="4">
+        Logged in as {userName}
+      </Text>
+      <Tabs display="flex" flexDirection="column" flex="1" position="relative" variant="unstyled" width="100%">
+        <TabPanels flex="1" >
+          <TabPanel>
+            <PhotosPage/>
+          </TabPanel>
+          <TabPanel>
+            <DrivePage/>
+          </TabPanel>
+          <TabPanel>
+            <UploadPage/>
+          </TabPanel>
+          <TabPanel>
+            <ProfilePage/>
+          </TabPanel>
+        </TabPanels>
+        <Box position="relative" mb="5">
+        <TabList width="100%">
+          <Tab flex="1">
+            <Icon as={IoImageOutline} w={6} h={6} />
+          </Tab>
+          <Tab flex="1">
+            <Icon as={IoCloudOutline} w={6} h={6} />
+          </Tab>
+          <Tab flex="1">
+            <Icon as={IoCloudUploadOutline} w={6} h={6} />
+          </Tab>
+          <Tab flex="1">
+            <Icon as={IoPersonOutline} w={6} h={6} />
+          </Tab>
+        </TabList>
+        <TabIndicator mt="-1.5px" height="2px" bg="orange.400" borderRadius="1px" />
+        </Box>
+        
+      </Tabs>
+    </Flex>
+        </div>
+        
     );
 };
 

@@ -23,7 +23,7 @@ const Home = () => {
             <Flex
       position="fixed"
       width="100%"
-      height="100%"
+      height="93%"
       flexDirection="column"
       alignItems="center"
       bg="white"
@@ -32,8 +32,8 @@ const Home = () => {
       <Text as="h2" fontWeight="bold" mb="4">
         Logged in as {userName}
       </Text>
-      <Tabs display="flex" flexDirection="column" flex="1" position="relative" variant="unstyled" width="100%">
-        <TabPanels flex="1" >
+      <Tabs overflow="scroll" display="flex" flexDirection="column" flex="1" position="relative" variant="unstyled" width="100%">
+        <TabPanels flex="1">
           <TabPanel>
             <PhotosPage/>
           </TabPanel>
@@ -47,7 +47,7 @@ const Home = () => {
             <ProfilePage/>
           </TabPanel>
         </TabPanels>
-        <Box position="relative" mb="5">
+        <Box width="100%" bottom="0" position="fixed" mb="1">
         <TabList width="100%">
           <Tab flex="1">
             <Icon as={IoImageOutline} w={6} h={6} />

@@ -2,10 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { tdClient} from '../../tdclient';
 import {Box, SimpleGrid, Image} from '@chakra-ui/react';
 
-const PhotosPage = () => {
+const PhotosPage = ({chatId}) => {
   const [documentIds, setDocumentIds] = useState([]);
   const [imgurls, setImgurls] = useState([]);
-  const [chatId, setChatId] = useState();
   const [lastFetchedMessageId, setLastFetchedMessageId] = useState(0);
 
   async function displayImage(file) {
@@ -85,20 +84,6 @@ const PhotosPage = () => {
     }
   }  
 
-  async function getChatId() {
-    if (process.env.REACT_APP_NIMBUSPHTOTS_ID){
-      setChatId(process.env.REACT_APP_NIMBUSPHTOTS_ID)
-    }
-    else {
-      const searchResponse = await tdClient.send({
-        '@type': 'searchChatsOnServer',
-        'query': "NimbusPhotos",
-        'limit': 1
-      });
-      setChatId(searchResponse.chat_ids[0]);
-    }    
-  }
-
   useEffect(() => {
     console.log("documentIds: ", documentIds);
     if(documentIds.length < 10) {
@@ -107,14 +92,6 @@ const PhotosPage = () => {
     const files = documentIds.map(async documentId => await downloadFile(documentId));
     console.log("file: ",files);
   }, [lastFetchedMessageId, chatId]);
-
-  useEffect(() => {
-    const fetchPhotos = async () => {      
-      //
-    };
-    getChatId();
-    fetchPhotos();
-  }, []);
 
   return (
     

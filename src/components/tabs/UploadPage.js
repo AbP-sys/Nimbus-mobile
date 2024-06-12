@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import Uppy from '@uppy/core';
 import { Dashboard } from '@uppy/react';
 import { tdClient} from '../../tdclient';
+import { encryptFile } from '../utils/encryption';
 
 import '@uppy/core/dist/style.min.css';
 import '@uppy/dashboard/dist/style.min.css';
 
-export default function UploadPage({chatId}) {
+export default function UploadPage({chatId, iv, encryptionKey}) {
   const [uppy] = useState(() => new Uppy());
   
   const readFileAsArrayBuffer = (file) => {
@@ -26,9 +27,9 @@ export default function UploadPage({chatId}) {
     try {
         for (const file of files) {
             const arrayBuffer = await readFileAsArrayBuffer(file);
+            const encryptedData = await encryptFile(arrayBuffer, encryptionKey, iv);
             const fileBuffer = new Uint8Array(arrayBuffer);
-            const fileBlob = new Blob([fileBuffer], { type: file.type });
-            console.log(fileBlob);
+            const fileBlob = new Blob([encryptedData], { type: file.type });
 
             const payload = {
               '@type': 'inputMessageDocument',
@@ -54,6 +55,6 @@ export default function UploadPage({chatId}) {
     });
     return () => uppy.close();
   }, [uppy]);
-  
+
   return <Dashboard uppy={uppy} />;
 }

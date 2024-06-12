@@ -8,10 +8,13 @@ import UploadPage from './tabs/UploadPage';
 import ProfilePage from './tabs/ProfilePage';
 import {tdClient} from '../tdclient';
 import { writeToConfig, readFromConfig } from './utils/configHandler';
+import { fetchEncryptionKey } from './utils/encryption';
 
 const Home = () => {
     const logoUrl = "nimbus-logo.png";
     const [nimbusPhotosChatId,setNimbusPhotosChatId] = useState();
+    const [encryptionIv, setEncryptionIv] = useState();
+    const [encryptionKey, setEncryptionKey] = useState();
 
     async function getPhotosChatId() { 
       const searchResponse = await tdClient.send({
@@ -24,7 +27,7 @@ const Home = () => {
     }
 
     useEffect(() => {
-      const fetchChatId = async () => {
+      const fetchConfigs = async () => {
         try {
           const photosId = await readFromConfig("NimbusPhotos_ChatId");
           if (photosId === null) {
@@ -33,11 +36,15 @@ const Home = () => {
           else {
             setNimbusPhotosChatId(photosId);
           }
+
+          const {iv, key} = await fetchEncryptionKey();
+          setEncryptionIv(iv);
+          setEncryptionKey(key);
         } catch (error) {
           console.error('Error fetching chat ID:', error);
         }
       };
-      fetchChatId();
+      fetchConfigs();
     }, []);
 
     return (
@@ -55,7 +62,7 @@ const Home = () => {
                   <DrivePage/>
                 </TabPanel>
                 <TabPanel>
-                  {nimbusPhotosChatId ? (<UploadPage chatId={nimbusPhotosChatId} />) : (  <p>Loading chat...</p>)}
+                  {(nimbusPhotosChatId && encryptionIv && encryptionKey)? (<UploadPage chatId={nimbusPhotosChatId} iv={encryptionIv} encryptionKey={encryptionKey} />) : (  <p>Loading...</p>)}
                 </TabPanel>
                 <TabPanel>
                   <ProfilePage/>

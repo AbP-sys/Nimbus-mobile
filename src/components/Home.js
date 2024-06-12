@@ -56,7 +56,7 @@ const Home = () => {
               </Box>
               <TabPanels flex="1">
                 <TabPanel>
-                  {nimbusPhotosChatId ? (<PhotosPage chatId={nimbusPhotosChatId} />) : (  <p>Loading chat...</p>)}
+                  {(nimbusPhotosChatId && encryptionIv && encryptionKey) ? (<PhotosPage chatId={nimbusPhotosChatId} iv={encryptionIv} encryptionKey={encryptionKey}/>) : (  <p>Loading chat...</p>)}
                 </TabPanel>
                 <TabPanel>
                   <DrivePage/>

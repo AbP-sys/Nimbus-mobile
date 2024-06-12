@@ -73,3 +73,11 @@ export async function encryptFile(arrayBuffer, key, iv ) {
   const encryptedData = await window.crypto.subtle.encrypt(algorithm, key, arrayBuffer);
   return encryptedData;
 }
+
+export async function decryptFile(encryptedData, encryptionKey, iv) {
+    const algorithm = { 
+        name: "AES-GCM", 
+        iv: iv };
+    const key = encryptionKey;
+    return await crypto.subtle.decrypt(algorithm, key, encryptedData);
+  }

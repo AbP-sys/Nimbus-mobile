@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { tdClient} from '../../tdclient';
 import {Box, SimpleGrid, Image} from '@chakra-ui/react';
+import { decryptFile } from '../utils/encryption';
 
-const PhotosPage = ({chatId}) => {
+const PhotosPage = ({chatId, iv, encryptionKey}) => {
   const [documentIds, setDocumentIds] = useState([]);
   const [imgurls, setImgurls] = useState([]);
   const [lastFetchedMessageId, setLastFetchedMessageId] = useState(0);
@@ -20,8 +21,11 @@ const PhotosPage = ({chatId}) => {
           '@type': 'readFile',
           file_id: file.id
         });
+        const encryptedArrayBuffer = await new Response(response.data).arrayBuffer();
+        const decryptedArrayBuffer = await decryptFile(encryptedArrayBuffer, encryptionKey, iv);
+        console.log("decrypt done...", decryptedArrayBuffer);
+        const blob = new Blob([decryptedArrayBuffer], { type: file.type });
 
-        const blob = response.data;
         const url = URL.createObjectURL(blob);
         console.log(url);
         imgurls.push(url);

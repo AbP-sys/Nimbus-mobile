@@ -7,35 +7,36 @@ import DrivePage from './tabs/DrivePage';
 import UploadPage from './tabs/UploadPage';
 import ProfilePage from './tabs/ProfilePage';
 import {tdClient} from '../tdclient';
+import { writeToConfig, readFromConfig } from './utils/configHandler';
 
 const Home = () => {
     const logoUrl = "nimbus-logo.png";
-    const [photosChatId, setPhotosChatId] = useState();
+    const [nimbusPhotosChatId,setNimbusPhotosChatId] = useState();
 
-    async function getPhotosChatId() {
-      if (process.env.REACT_APP_NIMBUSPHTOTS_ID){
-        return process.env.REACT_APP_NIMBUSPHTOTS_ID
-      }
-      else {
-        const searchResponse = await tdClient.send({
-          '@type': 'searchChatsOnServer',
-          'query': "NimbusPhotos",
-          'limit': 1
-        });
-        return searchResponse.chat_ids[0];
-      }    
+    async function getPhotosChatId() { 
+      const searchResponse = await tdClient.send({
+        '@type': 'searchChatsOnServer',
+        'query': "NimbusPhotos",
+        'limit': 1
+      });
+      await writeToConfig("NimbusPhotos_ChatId", searchResponse.chat_ids[0]);
+      setNimbusPhotosChatId(searchResponse.chat_ids[0]);
     }
 
     useEffect(() => {
       const fetchChatId = async () => {
         try {
-          const photosId = await getPhotosChatId();
-          setPhotosChatId(photosId);
+          const photosId = await readFromConfig("NimbusPhotos_ChatId");
+          if (photosId === null) {
+            await getPhotosChatId();
+          }
+          else {
+            setNimbusPhotosChatId(photosId);
+          }
         } catch (error) {
           console.error('Error fetching chat ID:', error);
         }
       };
-  
       fetchChatId();
     }, []);
 
@@ -48,13 +49,13 @@ const Home = () => {
               </Box>
               <TabPanels flex="1">
                 <TabPanel>
-                {photosChatId ? (<PhotosPage chatId={photosChatId} />) : (  <p>Loading chat...</p>)}
+                  {nimbusPhotosChatId ? (<PhotosPage chatId={nimbusPhotosChatId} />) : (  <p>Loading chat...</p>)}
                 </TabPanel>
                 <TabPanel>
                   <DrivePage/>
                 </TabPanel>
                 <TabPanel>
-                  {photosChatId ? (<UploadPage chatId={photosChatId} />) : (  <p>Loading chat...</p>)}
+                  {nimbusPhotosChatId ? (<UploadPage chatId={nimbusPhotosChatId} />) : (  <p>Loading chat...</p>)}
                 </TabPanel>
                 <TabPanel>
                   <ProfilePage/>

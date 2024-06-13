@@ -100,12 +100,20 @@ const PhotosPage = ({chatId, iv, encryptionKey}) => {
   return (
     
 
-      <Box p={5}>
-        <SimpleGrid columns={[1, 2, 3]} spacing={10}>
-          {imgurls.map((url, index) => (
-            <Image key={index} src={url} alt={`Image ${index + 1}`} borderRadius="md" />
-          ))}
-        </SimpleGrid>
+      <Box>
+        <SimpleGrid columns={[4, 6]} spacing={1}>
+        {imgurls.map((url, index) => (
+          <Image
+            key={index}
+            src={url}
+            alt={`Image ${index + 1}`}
+            borderRadius="md"
+            width="150px"
+            height="150px" // Set the size for each image
+            objectFit="cover" // Ensure the image covers the box
+          />
+        ))}
+      </SimpleGrid>
       </Box>
     
   );

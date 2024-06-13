@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Tabs, TabList,TabPanels, TabPanel,Tab, TabIndicator, Flex, Icon, Box, Image } from '@chakra-ui/react';
+import { Tabs, TabList,TabPanels, TabPanel,Tab, TabIndicator, Flex, Icon, Box, Image, Divider } from '@chakra-ui/react';
 import { IoImageOutline ,IoCloudOutline, IoCloudUploadOutline, IoPersonOutline } from "react-icons/io5";
 import { FiHardDrive } from "react-icons/fi";
 import PhotosPage from './tabs/PhotosPage';
@@ -69,6 +69,7 @@ const Home = () => {
                 </TabPanel>
               </TabPanels>
               <Box width="100%" bottom="0" position="fixed" mb="1">
+                <Divider />
                 <TabList width="100%">
                   <Tab flex="1">
                     <Icon as={IoImageOutline} w={6} h={6} />
